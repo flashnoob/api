@@ -11,6 +11,7 @@ router.post('/check', users_controller.verify_email);
 router.put('/:id/update', users_controller.user_update);
 
 router.post("/create", users_controller.user_create);
+router.post("/login", users_controller.user_sign_in);
 
 router.delete('/:id/delete', users_controller.user_delete);
 
