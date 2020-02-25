@@ -1,24 +1,40 @@
 const User = require("../models/users.model");
-
+const bcrypt =require('bcrypt')
 exports.user_create = function(req, res,next) {
 
-  
-  let user = new User({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    userName: req.body.userName,
-    email: req.body.email,
-    mobileNo: req.body.mobileNo,
-    password: req.body.password
-  });
 
-  user.save(function(err) {
-    if (err) {
-     return  next(err)
-    } else {
-      res.send("user Created successfully");
-    }
-  });
+  
+  User.findOne({ 
+    'email':req.body.email })
+    .then(user => {
+      if (!user) {
+        bcrypt.hash(req.body.password, 10).then((hash)=> {
+          let user = new User({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            userName: req.body.userName,
+            email: req.body.email,
+            mobileNo: req.body.mobileNo,
+            password: hash
+          });
+          user.save((err)=> {
+            if (err) {
+             res.send ({error:err})
+            } else {
+              res.send({ message:"user Created successfully"});
+            }
+          });
+      });
+      
+       
+      }
+      else{ return res.json({
+        emailNotTaken: false
+      });}
+    }    
+    )
+     
+
 };
 
 exports.user_details = function(req, res) {
